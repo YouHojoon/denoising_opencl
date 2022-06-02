@@ -40,7 +40,7 @@ OpenCLHandler::OpenCLHandler() noexcept(false) {
 		throw "CommandQueue()";
 	}
 
-	ifstream src_file("kernel.cl");
+	ifstream src_file("kernels.cl");
 	string src_prog(istreambuf_iterator<char>(src_file), (istreambuf_iterator<char>()));
 	const char* src = src_prog.c_str();
 	program = Program(context, src, false, &err_num);
@@ -50,7 +50,54 @@ OpenCLHandler::OpenCLHandler() noexcept(false) {
 
 	err_num = program.build({ device });
 	if (err_num != CL_SUCCESS) {
-		throw "Failed to build Program " + program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device);
+		cout<<"Failed to build Program " + program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device);
 	}
 }
 
+Kernel&  OpenCLHandler::getKernel(const string kernel_name, cl_int* err_num) {
+	return *(new Kernel(program, kernel_name.c_str(), err_num));
+}
+void OpenCLHandler::dot(const float** x1,const float** x2, float** output, const int x1_rows, const int x1_cols, const int x2_rows, const int x2_cols) {	
+	std::vector<float> x1_vector,x2_vector;//포인터로 연산하니까 값이 제대로 안들감
+	float* output_tmp = new float[x1_rows * x2_cols];
+	for (int i = 0; i < x1_rows; i++) {
+		for (int j = 0; j < x1_cols; j++) {
+			x1_vector.emplace_back(x1[i][j]);
+		}
+	}
+	for (int i = 0; i < x2_rows; i++) {
+		for (int j = 0; j < x2_cols; j++) {
+			x2_vector.emplace_back(x2[i][j]);
+		}
+	}
+
+	cl_int err_num;
+	Kernel kernel = getKernel("float_dot", &err_num);
+	check_error(err_num, "getKernel");
+	
+	//Buffer x1_buffer = Buffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float) * x1_rows * x1_cols, &err_num);
+	Buffer x1_buffer = Buffer(context, x1_vector.begin(), x1_vector.end() ,true,false,&err_num);
+	check_error(err_num,"x1_buffer");
+	Buffer x2_buffer = Buffer(context, x2_vector.begin(), x2_vector.end(), true, false, &err_num);
+	check_error(err_num, "x2_buffer");
+	Buffer output_buffer = Buffer(context, CL_MEM_WRITE_ONLY, sizeof(float) * x1_rows * x2_cols, NULL, &err_num);
+	check_error(err_num, "output buffer");
+
+	err_num = kernel.setArg(0, x1_buffer);
+	err_num |= kernel.setArg(1, x2_buffer);
+	err_num |= kernel.setArg(2, output_buffer);
+	err_num |= kernel.setArg(3, x1_cols);
+
+	err_num = queue.enqueueNDRangeKernel(kernel, NullRange, NDRange(x1_rows, x2_cols), NullRange);
+	check_error(err_num, "enqueueNDRangeKernel");
+
+	err_num = queue.enqueueReadBuffer(output_buffer, CL_TRUE, 0, sizeof(float) * x1_rows * x2_cols, output_tmp);
+	check_error(err_num, "enqueueReadBuffer");
+
+	for (int i = 0; i < x1_rows; i++) {
+		for (int j = 0; j < x2_cols; j++) {
+			output[i][j] =  output_tmp[i*x2_cols + j];
+		}
+	}
+	cout << endl;
+}

@@ -1,5 +1,6 @@
 #include "OpenCLHandler.h"
 #include "Tensor.h"
+#include "Conv2d.h"
 #include<vector>
 using namespace std;
 
@@ -16,11 +17,18 @@ int main(void) {
 					tensor.data[b][c][h][w] = 2.5;
 				}
 			}
-			
 		}
 	}
-	tensor.data_check();
-	
+
+	float** test = tensor.data[0][0];
+	for (int h = 0; h < sizes[2]; h++) {
+		for (int w = 0; w < sizes[3]; w++) {
+			cout<<test[h][w]<<",";
+		}
+	}
+	cout << endl;
+	Conv2d conv2d(handler,2,3,3);
+	conv2d.forward(tensor);
 
 	return 0;
 }
