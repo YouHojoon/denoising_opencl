@@ -13,7 +13,7 @@ using namespace cl;
 class OpenCLHandler {
 public:
 	OpenCLHandler(void) noexcept(false);
-	void dot(const float** x1, const float** x2, float** output, const int x1_rows, const int x1_cols, const int x2_rows, const int x2_cols);
+	void dot(const float** x1, const float** x2, float** output, const int x1_rows, const int x1_cols ,const int x2_cols);
 private:
 	Context context;
 	Program program;

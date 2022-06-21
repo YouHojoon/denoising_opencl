@@ -146,8 +146,10 @@
     <ClCompile Include="Conv2d.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OpenCLHandler.cpp" />
+    <ClCompile Include="LayerNorm.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="LayerNorm.h" />
     <ClInclude Include="OpenCLHandler.h" />
     <ClInclude Include="Conv2d.h" />
     <ClInclude Include="Tensor.h" />

@@ -3,7 +3,7 @@
 #include<iostream>
 #include<algorithm>
 #include<string>
-
+#include<cmath>
 using namespace std;
 template<typename T>
 class Tensor
@@ -11,8 +11,11 @@ class Tensor
 public:	
 	Tensor() {
 		data = nullptr;
+		shape[0] = 0;
+		shape[1] = 0;
+		shape[2] = 0;
+		shape[3] = 0;
 	}
-
 	Tensor(int shape[4]) {
 		for (int i = 0; i <4; i++) {
 			this->shape[i] = shape[i];
@@ -30,7 +33,6 @@ public:
 		}
 		
 	}
-
 	~Tensor() {
 		if (data != nullptr){
 			for (int b = 0; b < shape[0]; b++) {
@@ -52,7 +54,7 @@ public:
 	void data_check() const {
 		for (int b = 0; b < shape[0]; b++) {
 			for (int c = 0; c < shape[1]; c++) {
-				cout << c << " [ ";
+				cout << " [ ";
 				for (int h = 0; h < shape[2]; h++) {
 					cout << "[ ";
 					for (int w = 0; w < shape[3]; w++) {
@@ -65,7 +67,6 @@ public:
 			}
 		}
 	}
-
 	 Tensor<T>& pad(const T data, const int h_pad, const int w_pad) const{
 		int shape[4] = { this->shape[0],this->shape[1],this->shape[2] + 2*h_pad, this->shape[3] + 2*w_pad};
 		Tensor<T>* out = new Tensor(shape);
@@ -129,9 +130,107 @@ public:
 
 		 return *out;
 	 }
+	 Tensor<T>& operator -(Tensor<T> &x) {
+		 Tensor<T> *result = new Tensor<T>(x.shape);
+		 for (int b = 0; b < shape[0]; b++) {
+			 for (int c = 0; c < shape[1]; c++) {
+				 for (int h = 0; h < shape[2]; h++) {
+					 for (int w = 0; w < shape[3]; w++) {
+						 result->data[b][c][h][w] = data[b][c][h][w] - x.data[b][c][h][w];
+					 }
+				 }
+			 }
+		 }
+		 return *result;
+	 }
+	 Tensor<T>& operator /(Tensor<T>& x) {
+		 Tensor<T>* result = new Tensor<T>(x.shape);
+		 for (int b = 0; b < shape[0]; b++) {
+			 for (int c = 0; c < shape[1]; c++) {
+				 for (int h = 0; h < shape[2]; h++) {
+					 for (int w = 0; w < shape[3]; w++) {
+						 result->data[b][c][h][w] = data[b][c][h][w] / x.data[b][c][h][w];
+					 }
+				 }
+			 }
+		 }
+		 return *result;
+	 }
+	 Tensor<T>& operator +(T x) {
+		 Tensor<T>* result = new Tensor<T>(shape);
+		 for (int b = 0; b < shape[0]; b++) {
+			 for (int c = 0; c < shape[1]; c++) {
+				 for (int h = 0; h < shape[2]; h++) {
+					 for (int w = 0; w < shape[3]; w++) {
+						 result->data[b][c][h][w] = data[b][c][h][w] + x;
+					 }
+				 }
+			 }
+		 }
+		 return *result;
+	 }
 
 
+	 Tensor<T>& operator +(T* x) {
+		 Tensor<T>* result = new Tensor<T>(shape);
+		 for (int b = 0; b < shape[0]; b++) {
+			 for (int c = 0; c < shape[1]; c++) {
+				 for (int h = 0; h < shape[2]; h++) {
+					 for (int w = 0; w < shape[3]; w++) {
+						 result->data[b][c][h][w] = data[b][c][h][w] + x[w];
+					 }
+				 }
+			 }
+		 }
+		 return *result;
+	 }
+	 Tensor<T>& operator *(T* x) {
+		 Tensor<T>* result = new Tensor<T>(shape);
+		 for (int b = 0; b < shape[0]; b++) {
+			 for (int c = 0; c < shape[1]; c++) {
+				 for (int h = 0; h < shape[2]; h++) {
+					 for (int w = 0; w < shape[3]; w++) {
+						 result->data[b][c][h][w] = data[b][c][h][w] * x[w];
+					 }
+				 }
+			 }
+		 }
+		 return *result;
+	 }
+
+	 Tensor<T>& power(float power) {
+		 Tensor<T> *result = new Tensor<T>(shape);
+		 for (int b = 0; b < shape[0]; b++) {
+			 for (int c = 0; c < shape[1]; c++) {
+				 for (int h = 0; h < shape[2]; h++) {
+					 for (int w = 0; w < shape[3]; w++) {
+						 result->data[b][c][h][w] = pow(data[b][c][h][w], power);
+					 }
+				 }
+			 }
+		 }
+		 return *result;
+	 }
+	 Tensor<T>& mean() {
+		 Tensor<float> *mean = new Tensor<float>(shape);
+
+		 for (int b = 0; b < shape[0]; b++) {
+			 for (int c = 0; c < shape[1]; c++) {
+				 for (int h = 0; h < shape[2]; h++) {
+					 float sum = 0;
+					 for (int w = 0; w < shape[3]; w++) {
+						 sum += data[b][c][h][w];
+					 }
+					 sum /= shape[3];
+					 for (int w = 0; w < shape[3]; w++) {
+						 mean->data[b][c][h][w] = sum;
+					 }
+				 }
+			 }
+		 }
+		 return *mean;
+	 }
+	
 };
-
 #endif // ! TENSOR_HEADER
 

@@ -24,6 +24,9 @@
     <ClCompile Include="Conv2d.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="LayerNorm.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OpenCLHandler.h">
@@ -33,6 +36,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Tensor.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="LayerNorm.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

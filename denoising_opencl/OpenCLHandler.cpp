@@ -57,7 +57,7 @@ OpenCLHandler::OpenCLHandler() noexcept(false) {
 Kernel&  OpenCLHandler::getKernel(const string kernel_name, cl_int* err_num) {
 	return *(new Kernel(program, kernel_name.c_str(), err_num));
 }
-void OpenCLHandler::dot(const float** x1,const float** x2, float** output, const int x1_rows, const int x1_cols, const int x2_rows, const int x2_cols) {	
+void OpenCLHandler::dot(const float** x1,const float** x2, float** output, const int x1_rows, const int x1_cols, const int x2_cols) {	
 	std::vector<float> x1_vector,x2_vector;//포인터로 연산하니까 값이 제대로 안들감
 	float* output_tmp = new float[x1_rows * x2_cols];
 	for (int i = 0; i < x1_rows; i++) {
@@ -65,7 +65,7 @@ void OpenCLHandler::dot(const float** x1,const float** x2, float** output, const
 			x1_vector.emplace_back(x1[i][j]);
 		}
 	}
-	for (int i = 0; i < x2_rows; i++) {
+	for (int i = 0; i < x1_cols; i++) {
 		for (int j = 0; j < x2_cols; j++) {
 			x2_vector.emplace_back(x2[i][j]);
 		}

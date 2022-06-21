@@ -12,11 +12,13 @@ Conv2d::Conv2d(OpenCLHandler& handler, int in_dim, int hidden_dim, int kernel_si
 	int shape[4] = { hidden_dim,in_dim,kernel_size,kernel_size };
 	weights = new Tensor<float>(shape);
 
+	float cnt = 0.0;
 	for (int b = 0; b < shape[0]; b++) {
 		for (int c = 0; c < shape[1]; c++) {
 			for (int h = 0; h < shape[2]; h++) {
 				for (int w = 0; w < shape[3]; w++) {
-					weights->data[b][c][h][w] = 1.3;
+					weights->data[b][c][h][w] = cnt ;
+					cnt += 1.5;
 				}
 			}
 		}
@@ -38,8 +40,7 @@ Tensor<float>& Conv2d::forward(const Tensor<float>& input) {
 	int rows = weights->shape[1] * weights->shape[2] * weights->shape[3];
 	int cols = h * w;
 	float** input_col = new float* [rows];
-	std::cout << rows << ":" << cols <<":" << h << ":"<<w << endl;
-
+	//ÃÊ±âÈ­
 	for (int i = 0; i < rows; i++) {
 		input_col[i] = new float[cols];
 		for (int j = 0; j < cols; j++) {
@@ -78,7 +79,7 @@ Tensor<float>& Conv2d::forward(const Tensor<float>& input) {
 		for (int t = 0; t < weights->shape[0]; t++) {
 			output_tmp[t] = new float[cols];
 		}
-		handler.dot((const float **)w_row.data[0][0],(const float **) input_col, output_tmp, weights->shape[0], rows, rows, cols);
+		handler.dot((const float **)w_row.data[0][0],(const float **) input_col, output_tmp, weights->shape[0], rows, cols);
 		for (int ch = 0; ch < weights->shape[0]; ch++) {
 			for (int y = 0; y <h; y++) {
 				for (int x =0; x < w; x++) {
@@ -88,15 +89,10 @@ Tensor<float>& Conv2d::forward(const Tensor<float>& input) {
 		}
 	}
 	
-	cout << "data check" << endl;
+	cout << "input data" << endl;
 	input_pad.data_check();
-	cout << "input_col" << endl;
-	for (int i = 0; i < rows; i++) {
-		for (int j = 0; j < cols; j++) {
-			cout << input_col[i][j] << " ";
-		}
-		cout << endl;
-	}
+	cout << "weight" << endl;
+	weights->data_check();
 	cout << "output data" << endl;
 	output->data_check();
 	return *output;
