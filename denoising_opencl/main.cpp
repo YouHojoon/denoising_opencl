@@ -2,6 +2,7 @@
 #include "Tensor.h"
 #include "Conv2d.h"
 #include "LayerNorm.h"
+#include "GELU.h"
 #include<vector>
 using namespace std;
 
@@ -35,9 +36,12 @@ int main(void) {
 	conv2d.forward(tensor);*/
 
 	tensor.data_check();
+	GELU gelu(handler);
+	
+	gelu.forward(tensor).data_check();
 
-	LayerNorm norm(2);
-	norm.forward(tensor).data_check();
+	/*LayerNorm norm(2);
+	norm.forward(tensor).data_check();*/
 
 	return 0;
 }

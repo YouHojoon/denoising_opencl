@@ -1,3 +1,4 @@
+
 void kernel float_dot(global const float* x1, global const float* x2, global float* out,const int width){
 	int y = get_global_id(0);
 	int x = get_global_id(1);
@@ -11,4 +12,13 @@ void kernel float_dot(global const float* x1, global const float* x2, global flo
 
 	printf("%d sum: %f\n",y*x2_width+x,sum);
 	out[y*x2_width+x] = sum;
+}
+
+void kernel gelu(global const float* x, global float* out){
+	int index = get_global_id(0);
+	float value = x[index];
+	
+	float result = 0.5 * value * (1 + tanh(sqrt(2 / M_PI) * (value + 0.044715 * pow(value,3))));
+
+	out[index] = result;
 }

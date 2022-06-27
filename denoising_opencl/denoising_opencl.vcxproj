@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Conv2d.cpp" />
+    <ClCompile Include="GELU.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OpenCLHandler.cpp" />
     <ClCompile Include="LayerNorm.cpp" />
@@ -153,6 +154,7 @@
     <ClInclude Include="OpenCLHandler.h" />
     <ClInclude Include="Conv2d.h" />
     <ClInclude Include="Tensor.h" />
+    <ClInclude Include="GELU.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="kernels.cl" />

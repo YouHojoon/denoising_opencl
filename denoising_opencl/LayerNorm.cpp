@@ -33,8 +33,6 @@ Tensor<float>& LayerNorm::forward(Tensor<float>& x) {
 	std.data_check();
 	Tensor<float>* y = new Tensor<float>(reshape_shape);
 	y->data =(((x - mean) / std).reshape(x.shape[0], x.shape[2], x.shape[3], x.shape[1]) * gamma + beta).data;
-	/*y = &(*y * gamma);
-	y = &(*y * beta);*/
 
 	return *y;
 }

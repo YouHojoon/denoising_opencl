@@ -101,3 +101,30 @@ void OpenCLHandler::dot(const float** x1,const float** x2, float** output, const
 	}
 	cout << endl;
 }
+
+void OpenCLHandler::gelu(float *x, float* output, int length) {
+	cl_int err_num;
+	Kernel kernel = getKernel("gelu", &err_num);
+	check_error(err_num, "getKernel");
+
+	Buffer x_buffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float) * length, x, &err_num);
+	check_error(err_num, "x_buffer");
+	Buffer out_buffer(context, CL_MEM_WRITE_ONLY, sizeof(float) * length, 0, &err_num);
+	check_error(err_num, "out_buffer");
+
+	err_num = kernel.setArg(0, x_buffer);
+	err_num |= kernel.setArg(1, out_buffer);
+	check_error(err_num, "setArg");
+
+	err_num = queue.enqueueNDRangeKernel(kernel, NullRange, NDRange(length), NullRange);
+	check_error(err_num, "enqueueNDRangeKernel");
+
+	err_num = queue.enqueueReadBuffer(out_buffer, CL_TRUE, 0, sizeof(float) * length, output);
+	check_error(err_num, "enqueueReadBuffer");
+}
+
+
+
+
+
+
